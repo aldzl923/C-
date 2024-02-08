@@ -3,16 +3,29 @@
 #include <iostream>  // cout을 사용하기 위해 추가
 #include <vector>    // vector를 사용하기 위해 추가
 #include <chrono>  // 시간 측정을 위해 추가
+#include <fstream> // 파일 입출력을 위해 추가
+#include <string> // getline 사용하기 위해 추가
 
 using namespace std;
 using namespace std::chrono;
+
+// 기록을 저장할 파일의 경로
+const string RECORDS_FILE = "Sudoku_record.txt";
+
+// 플레이어의 기록을 저장하는 함수
+void saveRecord(const string& playerName, int stage, int timeInSeconds) {
+    ofstream file(RECORDS_FILE, ios::app); // 파일을 추가 모드로 열기
+
+    if (file.is_open()) {
+        file << "플레이어: " << playerName << ", 스테이지: " << stage << ", 소요 시간: " << timeInSeconds << "초" << endl;
+    }
+}
 
 const int BOARD_SIZE = 9; // 스도쿠 보드의 크기
 
 // 스도쿠 보드를 출력하는 함수
 void printBoard(const vector<vector<int>>& board);
 
-// 스도쿠 보드 상태가 유효한지 확인하는 함수
 bool isValid(const vector<vector<int>>& board, int row, int col, int num) {
     // 행과 열을 검사
     for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -133,8 +146,14 @@ bool isSudokuValid(const vector<vector<int>>& board) {
 int main() {
     srand(time(NULL));  // 랜덤한 시드 설정
 
-    int stage = 1; // 스테이지 초기화
+    int stage = 0; // 스테이지 초기화
 
+    // 플레이어 이름 입력 받기
+    string playerName;
+    cout << "플레이어 이름을 입력하세요: ";
+    getline(cin, playerName);
+
+    // 게임 실행
     while (stage <= 3) { // 세 번의 스테이지까지 게임을 진행
         vector<vector<int>> board(BOARD_SIZE, vector<int>(BOARD_SIZE, 0)); // 초기 스도쿠 보드 생성
 
@@ -146,7 +165,7 @@ int main() {
             int col = rand() % BOARD_SIZE;
             board[row][col] = 0;
         }
-        cout << "스테이지 " << stage << " 플레이어가 풀 스도쿠 보드:" << endl;
+        cout << " 스테이지 " << stage << endl;
         printBoard(board); // 플레이어가 풀 스도쿠 보드 출력
 
         // 게임 시작 시간 기록
@@ -191,14 +210,14 @@ int main() {
             }
         }
 
+        // 게임 결과 출력
         if (isCorrect) {
             cout << "정답입니다!";
             if (stage < 3) {
                 cout << " 다음 스테이지로 진행합니다." << endl;
             }
             else {
-                cout << " 모든 스테이지를 클리어했습니다." << endl << "총 게임 시간: " << duration.count();
-
+                cout << " 모든 스테이지를 클리어했습니다." << endl;
             }
             cout << "게임 시간: " << duration.count() << "초" << endl; // 게임 시간 출력
             ++stage;
@@ -206,7 +225,10 @@ int main() {
         else {
             cout << "오답입니다. 다시 시도하세요." << endl;
         }
+
+        // 게임 종료 후 기록 저장
+        saveRecord(playerName, stage, duration.count());
     }
 
-    return 0;
+    return 0; // 프로그램 종료
 }
