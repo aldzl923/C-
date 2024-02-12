@@ -44,7 +44,6 @@ bool isValid(const vector<vector<int>>& board, int row, int col, int num) {
     // 같은 열에 중복된 숫자가 있는지 확인
     for (int i = 0; i < BOARD_SIZE; ++i) {
 
-
         if (board[i][col] == num) {
             return false;
         }

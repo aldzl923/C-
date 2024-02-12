@@ -17,7 +17,7 @@ void saveRecord(const string& playerName, int stage, int timeInSeconds) {
     ofstream file(RECORDS_FILE, ios::app); // 파일을 추가 모드로 열기
 
     if (file.is_open()) {
-        file << "플레이어: " << playerName << ", 스테이지: " << stage  -1 << ", 소요 시간: " << timeInSeconds << "초" << endl;
+        file << "플레이어: " << playerName << ", 스테이지: " << stage - 1 << ", 소요 시간: " << timeInSeconds << "초" << endl;
     }
 }
 
@@ -35,8 +35,8 @@ bool isValid(const vector<vector<int>>& board, int row, int col, int num) {
     }
 
     // 3x3 그리드를 검사
-    int startRow = row - row % 3;
-    int startCol = col - col % 3;
+    int startRow = row - row % 3;   //0부터 8까지
+    int startCol = col - col % 3;   //0,1,2 >> 0,1,2 >> 3.4.5 >> 0 1 2 >> 6 7 8 >> 0 1 2
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (board[startRow + i][startCol + j] == num) {
@@ -75,7 +75,6 @@ bool fillSudoku(vector<vector<int>>& board) {
             break;
         }
     }
-
     // 빈 칸이 없으면 스도쿠가 완성됐음을 의미
     if (!isEmpty) {
         return true;
@@ -102,10 +101,11 @@ bool fillSudoku(vector<vector<int>>& board) {
 bool isSudokuValid(const vector<vector<int>>& board) {
     // 각 행에 중복된 숫자가 있는지 확인
     for (int row = 0; row < BOARD_SIZE; ++row) {
-        vector<bool> used(BOARD_SIZE + 1, false);
+        vector<bool> used(BOARD_SIZE + 1, false);      //used[num] 1부터 9까지의 숫자로 구성 >> 처음에는 false로 모두 사용하지 않았다는 뜻
         for (int col = 0; col < BOARD_SIZE; ++col) {
             int num = board[row][col];
-            if (num != 0 && used[num]) {
+            if (num != 0 && used[num]) {    // num이 0이 아니고 이미 사용된 num이라면
+     
                 return false; // 중복된 숫자가 발견됨
             }
             used[num] = true;
@@ -114,10 +114,11 @@ bool isSudokuValid(const vector<vector<int>>& board) {
 
     // 각 열에 중복된 숫자가 있는지 확인
     for (int col = 0; col < BOARD_SIZE; ++col) {
-        vector<bool> used(BOARD_SIZE + 1, false);
+        vector<bool> used(BOARD_SIZE + 1, false);    //used[num] 0부터 9까지의 숫자로 구성 >> 처음에는 false로 모두 사용하지 않았다는 뜻
         for (int row = 0; row < BOARD_SIZE; ++row) {
             int num = board[row][col];
             if (num != 0 && used[num]) {
+
                 return false; // 중복된 숫자가 발견됨
             }
             used[num] = true;
@@ -150,8 +151,8 @@ int main() {
 
     // 플레이어 이름 입력 받기
     string playerName;
-    cout << "플레이어 이름을 입력하세요: ";
-    getline(cin, playerName);
+    cout << "플레이어 이름을 입력하세요 : ";
+    getline(cin, playerName);  //엔터칠때까지 입력받음
 
     // 게임 실행
     while (stage <= 3) { // 세 번의 스테이지까지 게임을 진행
@@ -160,7 +161,7 @@ int main() {
         fillSudoku(board); // 스도쿠 보드 채우기
 
         // 일부 숫자 제거
-        for (int i = 0; i < 20; ++i) {
+        for (int i = 0; i < 50; i++) {
             int row = rand() % BOARD_SIZE;
             int col = rand() % BOARD_SIZE;
             board[row][col] = 0;
@@ -193,20 +194,15 @@ int main() {
 
         // 스도쿠 보드가 정답인지 확인하고 스도쿠의 규칙을 모두 만족하는지 확인
         bool isCorrect = true;
-        if (!isSudokuValid(answer)) {
-            isCorrect = false;
-        }
-        else {
-            for (int i = 0; i < BOARD_SIZE; ++i) {
-                for (int j = 0; j < BOARD_SIZE; ++j) {
-                    if (board[i][j] != 0 && board[i][j] != answer[i][j]) {
-                        isCorrect = false;
-                        break;
-                    }
-                }
-                if (!isCorrect) {
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                if (board[i][j] != 0 && board[i][j] != answer[i][j]) {
+                    isCorrect = false;
                     break;
                 }
+            }
+            if (!isCorrect) {
+                break;
             }
         }
 
@@ -225,6 +221,8 @@ int main() {
         else {
             cout << "오답입니다. 다시 시도하세요." << endl;
         }
+
+
 
         // 게임 종료 후 기록 저장
         saveRecord(playerName, stage, duration.count());
