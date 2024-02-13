@@ -29,7 +29,7 @@ void printBoard(const vector<vector<int>>& board);
 bool isValid(const vector<vector<int>>& board, int row, int col, int num) {
     // 행과 열을 검사
     for (int i = 0; i < BOARD_SIZE; ++i) {
-        if (board[row][i] == num || board[i][col] == num) {
+        if (board[row][i] == num || board[i][col] == num) {  // 해당 행과 열에 같은 num이 있을 경우 false
             return false;
         }
     }
@@ -97,53 +97,6 @@ bool fillSudoku(vector<vector<int>>& board) {
     return false; // 현재 스도쿠 상태에서는 채울 수 없음
 }
 
-// 스도쿠 보드가 스도쿠의 규칙을 모두 만족하는지 확인하는 함수
-bool isSudokuValid(const vector<vector<int>>& board) {
-    // 각 행에 중복된 숫자가 있는지 확인
-    for (int row = 0; row < BOARD_SIZE; ++row) {
-        vector<bool> used(BOARD_SIZE + 1, false);      //used[num] 1부터 9까지의 숫자로 구성 >> 처음에는 false로 모두 사용하지 않았다는 뜻
-        for (int col = 0; col < BOARD_SIZE; ++col) {
-            int num = board[row][col];
-            if (num != 0 && used[num]) {    // num이 0이 아니고 이미 사용된 num이라면
-     
-                return false; // 중복된 숫자가 발견됨
-            }
-            used[num] = true;
-        }
-    }
-
-    // 각 열에 중복된 숫자가 있는지 확인
-    for (int col = 0; col < BOARD_SIZE; ++col) {
-        vector<bool> used(BOARD_SIZE + 1, false);    //used[num] 0부터 9까지의 숫자로 구성 >> 처음에는 false로 모두 사용하지 않았다는 뜻
-        for (int row = 0; row < BOARD_SIZE; ++row) {
-            int num = board[row][col];
-            if (num != 0 && used[num]) {
-
-                return false; // 중복된 숫자가 발견됨
-            }
-            used[num] = true;
-        }
-    }
-
-    // 각 3x3 그리드에 중복된 숫자가 있는지 확인
-    for (int startRow = 0; startRow < BOARD_SIZE; startRow += 3) {
-        for (int startCol = 0; startCol < BOARD_SIZE; startCol += 3) {
-            vector<bool> used(BOARD_SIZE + 1, false);
-            for (int row = 0; row < 3; ++row) {
-                for (int col = 0; col < 3; ++col) {
-                    int num = board[startRow + row][startCol + col];
-                    if (num != 0 && used[num]) {
-                        return false; // 중복된 숫자가 발견됨
-                    }
-                    used[num] = true;
-                }
-            }
-        }
-    }
-
-    return true; // 모든 규칙을 만족함
-}
-
 int main() {
     srand(time(NULL));  // 랜덤한 시드 설정
 
@@ -161,7 +114,7 @@ int main() {
         fillSudoku(board); // 스도쿠 보드 채우기
 
         // 일부 숫자 제거
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 20; i++) {
             int row = rand() % BOARD_SIZE;
             int col = rand() % BOARD_SIZE;
             board[row][col] = 0;
@@ -221,8 +174,6 @@ int main() {
         else {
             cout << "오답입니다. 다시 시도하세요." << endl;
         }
-
-
 
         // 게임 종료 후 기록 저장
         saveRecord(playerName, stage, duration.count());
